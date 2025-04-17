@@ -6,6 +6,7 @@
 Что нужно сделать:
 Из коллекции постов выберите документы, в которых среди топиков встречается as, идентификатор автора содержит example.ru, а score больше 100.
 
+db.posts.find({"author": /.*example.ru.*, "topics": /.*as.*/ , "score": {$gt: 100}})
 
 # Задание 2
 
@@ -17,6 +18,7 @@
 creation_date — текущее время, автор — skbx@example.com, topics должен быть списком из одного элемента mongodb;
 creation_date — 31 декабря 2021 года, автор — skbx@example.ru.
 
+db.posts.insertMany([{"creation_date": new Date(), "author": "skbx@example.com", "topics": ["mongodb"]}, {"creation_date": new Date("2021-12-31"), "author": "skbx@example.ru", "topics": ["mongodb"]}])
 
 # Задание 3
 Цель практической работы:
@@ -25,6 +27,7 @@ creation_date — 31 декабря 2021 года, автор — skbx@example.r
 Что нужно сделать:
 Создайте композитный индекс для коллекции users, в него войдут поля first_name и last_name. Приведите запросы: на создание индекса и на проверку, что индекс используется.
 
+db.users.createIndex({"first_name": 1, "last_name": 1}) db.users.find({})
 
 # Задание 4
 
@@ -36,6 +39,7 @@ creation_date — 31 декабря 2021 года, автор — skbx@example.r
 Советы и указания
 Для выбора первой буквы имени используйте ключевое слово substr.
 
+db.users.aggregate([{$group: {_id: substr("$first_name", 0, 1), sum: {$sum: "$karma"}}}, {$match: {sum: {$gt: 300}}}])
 
 # Задание 5
 
@@ -47,3 +51,5 @@ creation_date — 31 декабря 2021 года, автор — skbx@example.r
 
 Советы и указания:
 Используйте встроенный в JavaScript метод Math.random() для сортировки символов в строке.
+
+db.system.js.insert({"_id": "shuffle", "value": function(x) { return x.split("").sort(function() { return Math.random() - 0.5 }).join(""); }}) db.users.aggregate([{$project: {_id: 0, name: shuffle("abcdefg")}}])
